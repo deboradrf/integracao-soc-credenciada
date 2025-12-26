@@ -213,26 +213,36 @@ app.post("/funcionarios", async (req, res) => {
   await pool.query(
     `
     INSERT INTO funcionarios
-    (nome, cpf, data_nascimento, matricula,
-     empresa_codigo, empresa_nome,
-     unidade_codigo, unidade_nome,
-     setor_codigo, setor_nome,
-     cargo_codigo, cargo_nome)
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+    (cod_empresa, nome_empresa, nome_funcionario, data_nascimento,
+    sexo, estado_civil, doc_identidade, cpf, cnh,
+    vencimento_cnh, matricula, data_admissao, tipo_contratacao, cod_categoria,
+    regime_trabalho, tipo_exame, cod_unidade, nome_unidade,
+    cod_setor, nome_setor, cod_cargo, nome_cargo)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
     `,
     [
-      f.nome,
-      f.cpf,
+      f.cod_empresa,
+      f.nome_empresa,
+      f.nome_funcionario,
       f.data_nascimento,
+      f.sexo,
+      f.estado_civil,
+      f.doc_identidade,
+      f.cpf,
+      f.cnh,
+      f.vencimento_cnh,
       f.matricula,
-      f.empresa_codigo,
-      f.empresa_nome,
-      f.unidade_codigo,
-      f.unidade_nome,
-      f.setor_codigo,
-      f.setor_nome,
-      f.cargo_codigo,
-      f.cargo_nome
+      f.data_admissao,
+      f.tipo_contratacao,
+      f.cod_categoria,
+      f.regime_trabalho,
+      f.tipo_exame,
+      f.cod_unidade,
+      f.nome_unidade,
+      f.cod_setor,
+      f.nome_setor,
+      f.cod_cargo,
+      f.nome_cargo
     ]
   );
 
@@ -288,36 +298,36 @@ app.post("/soc/funcionarios/:id/enviar", async (req, res) => {
         },
 
         funcionarioWsVo: {
-          codigoEmpresa: f.empresa_codigo,
+          codigoEmpresa: f.cod_empresa,
           tipoBuscaEmpresa: "CODIGO_SOC",
 
           cpf,
-          nomeFuncionario: f.nome,
+          nomeFuncionario: f.nome_funcionario,
           dataNascimento,
-          sexo: "FEMININO",
-          estadoCivil: "SOLTEIRO",
+          sexo: f.sexo,
+          estadoCivil: f.estado_civil,
           matricula: f.matricula,
-          dataAdmissao: "01/01/2024",
-          tipoContratacao: "CLT",
-          codigoCategoriaESocial: "101",    //falta isso
-          regimeTrabalho: "NORMAL",
+          dataAdmissao: f.data_admissao,
+          tipoContratacao: f.tipo_contratacao,
+          codigoCategoriaESocial: f.cod_categoria,
+          regimeTrabalho: f.regime_trabalho,
 
           situacao: "ATIVO",
           chaveProcuraFuncionario: "CPF"
         },
 
         unidadeWsVo: {
-          nome: f.unidade_nome,
+          nome: f.nome_unidade,
           tipoBusca: "NOME"
         },
 
         setorWsVo: {
-          nome: f.setor_nome,
+          nome: f.nome_setor,
           tipoBusca: "NOME"
         },
 
         cargoWsVo: {
-          nome: f.cargo_nome,
+          nome: f.nome_cargo,
           tipoBusca: "NOME"
         }
       }
