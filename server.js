@@ -46,8 +46,8 @@ const EXPORTA_UNIDADES = {
 };
 
 const EXPORTA_SETORES = {
-  codigo: "211241",
-  chave: "bc95fcdf593daa4ee4b7",
+  codigo: "211373",
+  chave: "a8becfc0b392392557a3",
   tipoSaida: "xml"
 };
 
@@ -81,11 +81,13 @@ app.get("/empresas", async (req, res) => {
     const registros = json?.root?.record || [];
 
     res.json(
-      (Array.isArray(registros) ? registros : [registros]).map(e => ({
-        codigo: e.CODIGO,
-        nome: e.RAZAOSOCIAL,
-        ativo: e.ATIVO == 1
-      }))
+      (Array.isArray(registros) ? registros : [registros])
+        .filter(e => e.ATIVO == 1)
+        .map(e => ({
+          codigo: e.CODIGO,
+          nome: e.RAZAOSOCIAL,
+          ativo: true
+        }))
     );
   } catch {
     res.status(500).json({ erro: "Erro empresas" });
@@ -112,11 +114,13 @@ app.get("/unidades/:empresa", async (req, res) => {
     const registros = json?.root?.record || [];
 
     res.json(
-      (Array.isArray(registros) ? registros : [registros]).map(u => ({
-        codigo: u.CODIGO,
-        nome: u.NOME,
-        ativo: u.ATIVO == 1
-      }))
+      (Array.isArray(registros) ? registros : [registros])
+        .filter(u => u.ATIVO == 1)
+        .map(u => ({
+          codigo: u.CODIGO,
+          nome: u.NOME,
+          ativo: true
+        }))
     );
   } catch {
     res.status(500).json({ erro: "Erro unidades" });
@@ -124,11 +128,10 @@ app.get("/unidades/:empresa", async (req, res) => {
 });
 
 // EXPORTA SETORES
-app.get("/setores/:empresa/:unidade", async (req, res) => {
+app.get("/setores/:empresa", async (req, res) => {
   try {
     const parametro = JSON.stringify({
       empresa: req.params.empresa,
-      unidade: req.params.unidade,
       ...EXPORTA_SETORES
     });
 
@@ -144,14 +147,17 @@ app.get("/setores/:empresa/:unidade", async (req, res) => {
     const registros = json?.root?.record || [];
 
     res.json(
-      (Array.isArray(registros) ? registros : [registros]).map(s => ({
-        codigo: s.CODIGO,
-        nome: s.NOME,
-        ativo: s.ATIVO == 1
-      }))
+      (Array.isArray(registros) ? registros : [registros])
+        .filter(s => s.ATIVO == 1) // ✅ setores ativos da empresa
+        .map(s => ({
+          codigo: s.CODIGO,
+          nome: s.NOME,
+          ativo: true
+        }))
     );
-  } catch {
-    res.status(500).json({ erro: "Erro setores" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: "Erro setores da empresa" });
   }
 });
 
@@ -175,11 +181,13 @@ app.get("/cargos/:empresa", async (req, res) => {
     const registros = json?.root?.record || [];
 
     res.json(
-      (Array.isArray(registros) ? registros : [registros]).map(c => ({
-        codigo: c.CODIGO,
-        nome: c.NOME,
-        ativo: c.ATIVO == 1
-      }))
+      (Array.isArray(registros) ? registros : [registros])
+        .filter(c => c.ATIVO == 1) // ✅ só precisa estar ativo
+        .map(c => ({
+          codigo: c.CODIGO,
+          nome: c.NOME,
+          ativo: true
+        }))
     );
   } catch {
     res.status(500).json({ erro: "Erro cargos" });
@@ -325,14 +333,13 @@ app.post("/funcionarios", async (req, res) => {
 
     const funcionarioId = rows[0].id;
 
-    // 🔥 CRIA SOLICITAÇÃO
     await pool.query(
       `
       INSERT INTO solicitacoes_funcionario
         (funcionario_id, solicitado_por)
       VALUES ($1, $2)
       `,
-      [funcionarioId, f.usuario_id] // ⚠️ enviar usuario_id do frontend
+      [funcionarioId, f.usuario_id]
     );
 
     await pool.query("COMMIT");
@@ -380,10 +387,13 @@ app.get("/solicitacoes/:id", async (req, res) => {
         f.*,
         sf.status,
         sf.solicitado_em,
-        u.nome AS solicitado_por_nome
+        u.nome AS solicitado_por_nome,
+        ua.nome AS analisado_por_nome,
+        sf.analisado_em
       FROM solicitacoes_funcionario sf
       JOIN funcionarios f ON f.id = sf.funcionario_id
       JOIN usuarios u ON u.id = sf.solicitado_por
+      LEFT JOIN usuarios ua ON ua.id = sf.analisado_por
       WHERE sf.id = $1
     `, [id]);
 
@@ -396,6 +406,36 @@ app.get("/solicitacoes/:id", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: "Erro ao buscar detalhes" });
+  }
+});
+
+// APROVAR / REPROVAR SOLICITAÇÃO
+app.put("/solicitacoes/:id/status", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, usuario_id } = req.body;
+
+    if (!["APROVADO", "REPROVADO"].includes(status)) {
+      return res.status(400).json({ erro: "Status inválido" });
+    }
+
+    await pool.query(
+      `
+      UPDATE solicitacoes_funcionario
+      SET
+        status = $1,
+        analisado_por = $2,
+        analisado_em = NOW()
+      WHERE id = $3
+      `,
+      [status, usuario_id, id]
+    );
+
+    res.json({ sucesso: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: "Erro ao alterar status" });
   }
 });
 
@@ -491,6 +531,17 @@ app.post("/soc/funcionarios/:id/enviar", async (req, res) => {
         }
       }
     };
+
+    const { status } = await pool.query(
+      `SELECT status FROM solicitacoes_funcionario WHERE id = $1`,
+      [id]
+    ).then(r => r.rows[0]);
+
+    if (status !== "APROVADO") {
+      return res.status(400).json({
+        erro: "Apenas solicitações aprovadas podem ser enviadas ao SOC"
+      });
+    }
 
     const [result] =
       await client.importacaoFuncionarioAsync(dataBody);

@@ -12,7 +12,7 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
     <script src="https://kit.fontawesome.com/4392b60e4c.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/public/css/index.css">
+    <link rel="stylesheet" href="../css/index.css">
 </head>
 
 <body>
@@ -27,29 +27,57 @@
             <div class="header-center">
                 <span>
                     <i class="fa-solid fa-house"></i>
-                    <a href="#" class="header-link"> Início</a>
+                    <a href="../pages/index.html" class="header-link"> Início</a>
                 </span>
                 <span>
                     <i class="fa-solid fa-circle-info"></i>
                     <a href="#" class="header-link">Ajuda</a>
                 </span>
-                <button class="btn-logout" onclick="logout()">
+                <span>
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    Logout
+                    <a href="#" class="header-link" onclick="logout()">Logout</a>
+                </span>
+            </div>
+
+            <div class="dropdown profile-wrapper">
+                <button class="profile-trigger dropdown-toggle" data-bs-toggle="dropdown" aria-label="Abrir menu do perfil">
+                    <div class="avatar-circle">
+                        <i id="avatarIcon" class="fa-solid"></i>
+                    </div>
                 </button>
-            </div>
 
-            <div class="header-right">
-                <div id="avatarContainer" class="avatar-container">
-                    <i id="avatarEmpresa" class="fa-solid fa-building"></i>
-                    <i id="avatarCredenciada" class="fa-solid fa-hospital"></i>
+                <div class="dropdown-menu dropdown-menu-end profile-menu shadow">
+
+                    <!-- Header -->
+                    <div class="profile-header">
+                        <div class="avatar-circle large">
+                            <i id="avatarIconDropdown" class="fa-solid"></i>
+                        </div>
+                        <span id="userNameDropdown" class="user-name"></span>
+                    </div>
+
+                    <hr>
+
+                    <!-- Menu -->
+                    <ul class="profile-list">
+                        <li>
+                            <i class="fa-regular fa-user"></i> Perfil
+                        </li>
+
+                        <li>
+                            <i class="fa-regular fa-bell"></i> Notificações
+                        </li>
+
+                        <li>
+                            <i class="fa-solid fa-gear"></i> Configurações
+                        </li>
+                    </ul>
+
+                    <hr>
+
+                    <div id="dropdownUserExtra" class="profile-subtitle"></div>
                 </div>
-                <span id="userName" class="user-name"></span>
             </div>
-        </div>
-
-        <div class="header-bottom">
-            <span id="userExtra"></span>
         </div>
     </header>
 
@@ -60,7 +88,8 @@
                     Bem-vindo(a) ao Sistema de Cadastros
                 </h1>
                 <p class="welcome-subtitle">
-                    Uma plataforma centralizada para gerenciamento e envio de informações ao SOC de forma simples, segura e
+                    Uma plataforma centralizada para gerenciamento e envio de informações ao SOC de forma simples,
+                    segura e
                     organizada.
                 </p>
             </div>
@@ -128,83 +157,8 @@
         </div>
     </main>
 
-    <script>
-        const usuario = JSON.parse(localStorage.getItem("usuario"));
-
-        if (!usuario) {
-            window.location.href = "login.html";
-        }
-
-        const cardEmpresa = document.getElementById("cardEmpresa");
-        const cardCredenciadas = document.querySelectorAll(".card-credenciada");
-
-        const userName = document.getElementById("userName");
-        const userExtra = document.getElementById("userExtra");
-        const avatarEmpresa = document.getElementById("avatarEmpresa");
-        const avatarCredenciada = document.getElementById("avatarCredenciada");
-
-        function getPrimeiroNomeESobrenome(nomeCompleto) {
-            if (!nomeCompleto) return "";
-            const partes = nomeCompleto.trim().split(" ");
-            return partes.length >= 2
-                ? `${partes[0]} ${partes[1]}`
-                : partes[0];
-        }
-
-        // 👤 Nome do usuário (somente nome + 1º sobrenome)
-        userName.textContent = getPrimeiroNomeESobrenome(usuario.nome);
-
-        // 🎯 CONTROLE DE CARDS POR PERFIL
-        if (usuario.perfil === "CREDENCIADA") {
-            cardEmpresa.style.display = "none";
-
-            cardCredenciadas.forEach(card => {
-                card.style.display = "flex";
-            });
-
-            avatarCredenciada.style.display = "flex";
-            avatarEmpresa.style.display = "none";
-
-            userExtra.innerHTML = `
-                <i class="fa-solid fa-city"></i> ${usuario.nome_empresa}
-                <i class="fa-solid fa-building"></i> ${usuario.nome_unidade}
-            `;
-        }
-
-        if (usuario.perfil === "EMPRESA") {
-            cardEmpresa.style.display = "flex";
-
-            cardCredenciadas.forEach(card => {
-                card.style.display = "none";
-            });
-
-            avatarEmpresa.style.display = "flex";
-            avatarCredenciada.style.display = "none";
-
-            userExtra.innerHTML = `
-                <i class="fa-solid fa-city"></i> ${usuario.nome_empresa}
-                <i class="fa-solid fa-building"></i> ${usuario.nome_unidade}
-            `;
-        }
-
-        function acessarFormulario() {
-            if (!usuario.cod_empresa) {
-                alert("Empresa não encontrada no usuário logado");
-                return;
-            }
-
-            localStorage.setItem("empresaCodigo", usuario.cod_empresa);
-            window.location.href = "formulario.html";
-        }
-
-        function logout() {
-            localStorage.removeItem("usuario");
-            localStorage.removeItem("empresaCodigo");
-            window.location.href = "login.html";
-        }
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../script/index.js"></script>
 </body>
 
 </html>

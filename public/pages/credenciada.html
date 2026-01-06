@@ -16,19 +16,69 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg p-4">
-            <a class="navbar-brand gap-2" href="../pages/index.html">
-                <i class="fa-solid fa-shield-halved"></i>
-                <strong>Sistema de Cadastros</strong>
-            </a>
+    <header class="header-container">
+        <div class="header-top">
 
-            <div class="ms-auto">
-                <ul class="navbar-nav flex-row gap-3 text-white small">
-                    <li class="nav-item">Ajuda</li>
-                </ul>
+            <div class="header-left">
+                <i class="fa-solid fa-users-rectangle"></i>
+                <strong>Sistema de Cadastros</strong>
             </div>
-        </nav>
+
+            <div class="header-center">
+                <span>
+                    <i class="fa-solid fa-house"></i>
+                    <a href="../pages/index.html" class="header-link"> Início</a>
+                </span>
+                <span>
+                    <i class="fa-solid fa-circle-info"></i>
+                    <a href="#" class="header-link">Ajuda</a>
+                </span>
+                <span>
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <a href="#" class="header-link" onclick="logout()">Logout</a>
+                </span>
+            </div>
+
+            <div class="dropdown profile-wrapper">
+                <button class="profile-trigger dropdown-toggle" data-bs-toggle="dropdown">
+                    <div class="avatar-circle">
+                        <i id="avatarIcon" class="fa-solid"></i>
+                    </div>
+                </button>
+
+                <div class="dropdown-menu dropdown-menu-end profile-menu shadow">
+
+                    <!-- Header -->
+                    <div class="profile-header">
+                        <div class="avatar-circle large">
+                            <i id="avatarIconDropdown" class="fa-solid"></i>
+                        </div>
+                        <span id="userNameDropdown" class="user-name"></span>
+                    </div>
+
+                    <hr>
+
+                    <!-- Menu -->
+                    <ul class="profile-list">
+                        <li>
+                            <i class="fa-regular fa-user"></i> Perfil
+                        </li>
+
+                        <li>
+                            <i class="fa-regular fa-bell"></i> Notificações
+                        </li>
+
+                        <li>
+                            <i class="fa-solid fa-gear"></i> Configurações
+                        </li>
+                    </ul>
+
+                    <hr>
+
+                    <div id="dropdownUserExtra" class="profile-subtitle"></div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main>
@@ -41,29 +91,31 @@
             <div class="filters">
                 <div class="filter-group">
                     <label>Status</label>
-                    <select>
-                        <option>Todos</option>
-                        <option>Pendente</option>
-                        <option>Aprovado</option>
-                        <option>Reprovado</option>
+                    <select id="filterStatus">
+                        <option value="">Todos</option>
+                        <option value="PENDENTE">Pendente</option>
+                        <option value="APROVADO">Aprovado</option>
+                        <option value="REPROVADO">Reprovado</option>
+                        <option value="ENVIADO_SOC">Enviado ao SOC</option>
+                        <option value="ERRO">Erro</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <label>Empresa</label>
-                    <input type="text" placeholder="Buscar empresa">
+                    <input id="filterEmpresa" type="text" placeholder="Buscar empresa">
                 </div>
 
                 <div class="filter-group">
                     <label>Nome do Funcionário</label>
-                    <input type="text" placeholder="Buscar por nome">
+                    <input id="filterFuncionario" type="text" placeholder="Buscar por nome">
                 </div>
 
                 <div class="filter-actions">
-                    <button class="btn-search">
+                    <button id="btnBuscar" class="btn-search">
                         <i class="fa-solid fa-magnifying-glass"></i> Buscar
                     </button>
-                    <button class="btn-clear">Limpar filtros</button>
+                    <button id="btnLimpar" class="btn-clear">Limpar filtros</button>
                 </div>
             </div>
 
@@ -189,12 +241,9 @@
                     <button class="btn btn-success" onclick="alterarStatus('APROVADO')">
                         Aprovar
                     </button>
-
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">
-                        Fechar
-                    </button>
                 </div>
 
+                <p id="linha_aprovacao" class="text-muted small mb-0"></p>
             </div>
         </div>
     </div>

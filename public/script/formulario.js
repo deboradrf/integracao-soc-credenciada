@@ -1,4 +1,4 @@
-// CÓDIGO E NOME DA EMPRESA LOGADA
+// DADOS DA EMPRESA LOGADA
 let empresaCodigo = localStorage.getItem("empresaCodigo");
 let nomeEmpresa = localStorage.getItem("empresaNome");
 
@@ -10,14 +10,83 @@ if (!usuarioLogado) {
   window.location.href = "/login.html";
 }
 
-const usuarioNome = usuarioLogado.nome;
+// PERFIL DO USUÁRIO
+document.addEventListener("DOMContentLoaded", () => {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-// SE NÃO TIVER CÓDIGO, DÁ ERRO
-if (!empresaCodigo) {
-  alert("Empresa não informada");
+  if (!usuario) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  // PREENCHE A EMPRESA NO FORMULÁRIO
+  document.getElementById("empresaNomeView").value = usuario.nome_empresa;
+  document.getElementById("empresaCodigoHidden").value = usuario.cod_empresa;
+
+  const avatarIcon = document.getElementById("avatarIcon");
+  const avatarIconDropdown = document.getElementById("avatarIconDropdown");
+  const userNameDropdown = document.getElementById("userNameDropdown");
+  const dropdownUserExtra = document.getElementById("dropdownUserExtra");
+
+  const avatarBtn = document.querySelector(".profile-trigger .avatar-circle");
+  const avatarDrop = document.querySelector(".profile-header .avatar-circle");
+
+  function getPrimeiroNome(nomeCompleto) {
+    if (!nomeCompleto) return "";
+    const partes = nomeCompleto.trim().split(" ");
+    return partes.slice(0, 2).join(" ");
+  }
+
+  // NOME
+  userNameDropdown.textContent = getPrimeiroNome(usuario.nome);
+
+  // EMPRESA E UNIDADE
+  dropdownUserExtra.innerHTML = `
+    <div class="company-name">${usuario.nome_empresa}</div>
+    <div class="unit-name">${usuario.nome_unidade}</div>
+  `;
+
+  // LÓGICA DOS PERFIS DE ACESSO
+  if (usuario.perfil === "CREDENCIADA") {
+    avatarIcon.classList.add("fa-hospital");
+    avatarIconDropdown.classList.add("fa-hospital");
+
+    avatarBtn.classList.add("credenciada");
+    avatarDrop.classList.add("credenciada");
+  }
+
+  if (usuario.perfil === "EMPRESA") {
+    avatarIcon.classList.add("fa-building");
+    avatarIconDropdown.classList.add("fa-building");
+
+    avatarBtn.classList.add("empresa");
+    avatarDrop.classList.add("empresa");
+  }
+
+  // BLUR
+  const profileBtn = document.querySelector(".profile-trigger");
+
+  profileBtn.addEventListener("show.bs.dropdown", () => {
+    document.body.classList.add("blur-main");
+  });
+
+  profileBtn.addEventListener("hide.bs.dropdown", () => {
+    document.body.classList.remove("blur-main");
+  });
+});
+
+async function init() {
+  await carregarNomeEmpresa();
+  await carregarUnidades();
+  await carregarCargos();
+
+  const cardMudancaFuncao = document.getElementById("cardMudancaFuncao");
+  cardMudancaFuncao.style.display = "none";
 }
 
-// FUNÇÃO PARA CARREGAR NOME DA EMPRESA
+document.addEventListener("DOMContentLoaded", init);
+
+// FUNÇÃO DE CARREGAMENTO INICIAL
 async function carregarNomeEmpresa() {
   if (!empresaCodigo) return;
 
@@ -38,15 +107,23 @@ async function carregarNomeEmpresa() {
   }
 }
 
-async function init() {
-  await carregarNomeEmpresa();
-  await carregarUnidades();
-  await carregarCargos();
-}
+// MOSTRAR/ESCONDER SEÇÃO DE MUDANÇA DE FUNÇÃO
+document.getElementById("tipo_exame").addEventListener("change", function () {
+  const cardMudancaFuncao = document.getElementById("cardMudancaFuncao");
 
-document.addEventListener("DOMContentLoaded", init);
+  if (this.value === "mudanca_riscos_operacionais") {
+    cardMudancaFuncao.style.display = "block";
+  } else {
+    cardMudancaFuncao.style.display = "none";
 
-// FUNÇÃO PARA CARREGAR UNIDADES
+    // LIMPA OS CAMPOS
+    document.getElementById("funcao_anterior").value = "";
+    document.getElementById("funcao_atual").value = "";
+    document.getElementById("setor_atual").value = "";
+  }
+});
+
+// CARREGAR UNIDADES (filtrado por empresa)
 async function carregarUnidades() {
   if (!empresaCodigo) return;
 
@@ -77,24 +154,30 @@ document.getElementById("unidadeSelect").addEventListener("change", function () 
   carregarSetores(unidadeCodigo);
 });
 
-// FUNÇÃO PARA CARREGAR SETORES
-async function carregarSetores(unidadeCodigo) {
-  const res = await fetch(`http://localhost:3001/setores/${empresaCodigo}/${unidadeCodigo}`);
-  const setores = await res.json();
+// CARREGAR SETORES (filtrado por empresa)
+async function carregarSetores() {
+  if (!empresaCodigo) return;
 
-  const select = document.getElementById("setorSelect");
-  select.innerHTML = '<option value="">Selecione...</option>';
+  try {
+    const res = await fetch(`http://localhost:3001/setores/${empresaCodigo}`);
+    const setores = await res.json();
 
-  setores.forEach(s => {
-    const opt = document.createElement("option");
-    opt.value = s.codigo;
-    opt.textContent = s.ativo && s.relacionamentoAtivo ? s.nome : `${s.nome} (inativo ou sem vínculo)`;
-    opt.dataset.nome = s.nome;
-    select.appendChild(opt);
-  });
+    const select = document.getElementById("setorSelect");
+    select.innerHTML = '<option value="">Selecione...</option>';
+
+    setores.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.codigo;
+      opt.textContent = s.ativo ? s.nome : `${s.nome} (inativo)`;
+      opt.dataset.nome = s.nome;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Erro ao carregar setores:", err);
+  }
 }
 
-// FUNÇÃO PARA CARREGAR CARGOS
+// CARREGAR CARGOS (TODAS AS EMPRESAS - não tem filtro por empresa)
 async function carregarCargos() {
   const res = await fetch(`http://localhost:3001/cargos/${empresaCodigo}`);
   const cargos = await res.json();
@@ -111,7 +194,7 @@ async function carregarCargos() {
   });
 }
 
-// MAPEAMENTO PARA O CÓDIGO DE CONTRATAÇÃO
+// MAPA DAS CATEGORIAS DO ESOCIAL
 const codCategoriaMap = {
   CLT: "101",
   COOPERADO: "741",
@@ -135,6 +218,54 @@ const codCategoriaMap = {
   SERVIDOR_ADM_CENTRALIZADA_OU_DESCENTRALIZADA: ""
 };
 
+// MÁSCARA DE CPF
+const cpfInput = document.getElementById("cpf");
+
+cpfInput.addEventListener("input", function () {
+  let value = this.value.replace(/\D/g, "");
+
+  if (value.length > 11) value = value.slice(0, 11);
+
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+  this.value = value;
+});
+
+// MÁSCARA DE RG
+const rgInput = document.getElementById("doc_identidade");
+
+rgInput.addEventListener("input", function () {
+    let value = rgInput.value.toUpperCase();
+
+    // 1. Extrair as 2 primeiras letras (UF)
+    let uf = value.slice(0, 2).replace(/[^A-Z]/g, "");
+
+    // 2. Extrair apenas números do restante
+    let numeros = value.slice(2).replace(/\D/g, "");
+
+    // 3. Separar os primeiros 8 números e o último dígito
+    let numerosAntesTraco = numeros.slice(0, 8);
+    let ultimoDigito = numeros.slice(8, 9);
+
+    // 4. Formatar os 8 números com pontos
+    let numerosFormatados = numerosAntesTraco;
+    
+    if (numerosAntesTraco.length > 5) {
+        numerosFormatados = numerosAntesTraco.replace(/(\d{2})(\d{3})(\d{1,3})/, "$1.$2.$3");
+    } else if (numerosAntesTraco.length > 2) {
+        numerosFormatados = numerosAntesTraco.replace(/(\d{2})(\d{1,3})/, "$1.$2");
+    }
+
+    // MONTAR VALOR FINAL
+    let finalValue = uf;
+    if (numerosFormatados) finalValue += " " + numerosFormatados;
+    if (ultimoDigito) finalValue += "-" + ultimoDigito;
+
+    rgInput.value = finalValue;
+});
+
 // ENVIO DO FORMULÁRIO
 document.getElementById("formCadastro").addEventListener("submit", async function (e) {
   e.preventDefault();
@@ -143,7 +274,8 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
   const setorSelect = document.getElementById("setorSelect");
   const cargoSelect = document.getElementById("cargoSelect");
 
-  const tipoContratacaoValue = document.getElementById("tipo_contratacao").value;
+  const tipoContratacaoValue =
+    document.getElementById("tipo_contratacao").value;
 
   const dados = {
     nome_funcionario: document.getElementById("nome").value,
@@ -156,16 +288,21 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
     vencimento_cnh: document.getElementById("vencimento_cnh").value,
     matricula: document.getElementById("matricula").value,
     data_admissao: document.getElementById("data_admissao").value,
+
     tipo_contratacao: tipoContratacaoValue,
     cod_categoria: codCategoriaMap[tipoContratacaoValue],
     regime_trabalho: document.getElementById("regime_trabalho").value,
     tipo_exame: document.getElementById("tipo_exame").value,
+
     cod_empresa: empresaCodigo,
     nome_empresa: nomeEmpresa,
+
     cod_unidade: unidadeSelect.value,
     nome_unidade: unidadeSelect.selectedOptions[0].dataset.nome,
+
     cod_setor: setorSelect.value,
     nome_setor: setorSelect.selectedOptions[0].dataset.nome,
+
     cod_cargo: cargoSelect.value,
     nome_cargo: cargoSelect.selectedOptions[0].dataset.nome,
 
@@ -173,13 +310,11 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
   };
 
   try {
-    const resposta = await fetch("http://localhost:3001/funcionarios", {
+    await fetch("http://localhost:3001/funcionarios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dados)
     });
-
-    const json = await resposta.json();
 
     document.getElementById("mensagem").innerHTML =
       "<div class='alert alert-success'>Cadastro enviado com sucesso!</div>";
@@ -191,3 +326,20 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
       "<div class='alert alert-danger'>Erro ao enviar cadastro</div>";
   }
 });
+
+// FUNÇÃO DE EDITAR PERFIL
+function editarPerfil() {
+    alert("Abrir tela de edição de perfil");
+}
+
+// FUNÇÃO DE CONFIGURAÇÃO
+function abrirConfiguracoes() {
+    alert("Abrir configurações");
+}
+
+// FUNÇÃO DE LOGOUT
+function logout() {
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("empresaCodigo");
+    window.location.href = "login.html";
+}

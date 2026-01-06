@@ -1,0 +1,103 @@
+let usuario = null;
+
+// PERFIL DO USUÁRIO
+document.addEventListener("DOMContentLoaded", () => {
+    usuario = JSON.parse(localStorage.getItem("usuario"));
+
+    if (!usuario) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const cardEmpresa = document.getElementById("cardEmpresa");
+    const cardCredenciadas = document.querySelectorAll(".card-credenciada");
+
+    const userNameDropdown = document.getElementById("userNameDropdown");
+    const dropdownUserExtra = document.getElementById("dropdownUserExtra");
+
+    const avatarIcon = document.getElementById("avatarIcon");
+    const avatarIconDropdown = document.getElementById("avatarIconDropdown");
+
+    const avatarBtn = document.querySelector(".profile-trigger .avatar-circle");
+    const avatarDrop = document.querySelector(".profile-header .avatar-circle");
+
+    function getPrimeiroNomeESobrenome(nomeCompleto) {
+        if (!nomeCompleto) return "";
+        const partes = nomeCompleto.trim().split(" ");
+        return partes.length >= 2
+            ? `${partes[0]} ${partes[1]}`
+            : partes[0];
+    }
+
+    // NOME
+    const nomeFormatado = getPrimeiroNomeESobrenome(usuario.nome);
+    userNameDropdown.innerText = nomeFormatado;
+
+    // EMPRESA E UNIDADE
+    dropdownUserExtra.innerHTML = `
+        <div class="company-name">${usuario.nome_empresa}</div>
+        <div class="unit-name">${usuario.nome_unidade}</div>
+    `;
+
+    // LÓGICA DOS PERFIS DE ACESSO
+    if (usuario.perfil === "CREDENCIADA") {
+        cardEmpresa.style.display = "none";
+        cardCredenciadas.forEach(card => card.style.display = "flex");
+
+        avatarIcon.classList.add("fa-hospital");
+        avatarIconDropdown.classList.add("fa-hospital");
+
+        avatarBtn.classList.add("credenciada");
+        avatarDrop.classList.add("credenciada");
+    }
+
+    if (usuario.perfil === "EMPRESA") {
+        cardEmpresa.style.display = "flex";
+        cardCredenciadas.forEach(card => card.style.display = "none");
+
+        avatarIcon.classList.add("fa-building");
+        avatarIconDropdown.classList.add("fa-building");
+
+        avatarBtn.classList.add("empresa");
+        avatarDrop.classList.add("empresa");
+    }
+
+    // BLUR DE FUNDO
+    const profileBtn = document.querySelector(".profile-trigger");
+
+    profileBtn.addEventListener("show.bs.dropdown", () => {
+        document.body.classList.add("blur-main");
+    });
+
+    profileBtn.addEventListener("hide.bs.dropdown", () => {
+        document.body.classList.remove("blur-main");
+    });
+});
+
+// FUNÇÃO PARA ACESSAR FORMULÁRIO
+function acessarFormulario() {
+    if (!usuario || !usuario.cod_empresa) {
+        alert("Empresa não encontrada no usuário logado");
+        return;
+    }
+
+    localStorage.setItem("empresaCodigo", usuario.cod_empresa);
+    window.location.href = "formulario.html";
+}
+
+// FUNÇÃO DE EDITAR PERFIL
+function editarPerfil() {
+    alert("Abrir tela de edição de perfil");
+}
+
+// FUNÇÃO DE CONFIGURAÇÃO
+function abrirConfiguracoes() {
+    alert("Abrir configurações");
+}
+
+// FUNÇÃO DE LOGOUT
+function logout() {
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("empresaCodigo");
+    window.location.href = "login.html";
+}
