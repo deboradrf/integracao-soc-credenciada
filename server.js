@@ -195,10 +195,11 @@ app.get("/cargos/:empresa", async (req, res) => {
 });
 
 // CADASTRO DE USUÁRIOS 
-app.post("/usuarios", async (req, res) => {
+app.post("/cadastro", async (req, res) => {
   try {
     const {
       nome,
+      cpf,
       email,
       senha,
       perfil,
@@ -208,12 +209,8 @@ app.post("/usuarios", async (req, res) => {
       nome_unidade
     } = req.body;
 
-    if (!nome || !email || !senha || !perfil) {
+    if (!nome || !cpf | !email || !senha || !perfil) {
       return res.status(400).json({ erro: "Dados obrigatórios ausentes" });
-    }
-
-    if (!["EMPRESA", "CREDENCIADA"].includes(perfil)) {
-      return res.status(400).json({ erro: "Perfil inválido" });
     }
 
     if (!cod_empresa || !cod_unidade) {
@@ -225,18 +222,19 @@ app.post("/usuarios", async (req, res) => {
     const { rowCount } = await pool.query(
       `
       INSERT INTO usuarios
-        (nome, email, senha, perfil, cod_empresa, nome_empresa, cod_unidade, nome_unidade)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+        (nome, cpf, email, senha, perfil, cod_empresa, nome_empresa, cod_unidade, nome_unidade)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
       `,
       [
         nome,
+        cpf,
         email,
         senha,
         perfil,
-        cod_empresa || null,
-        nome_empresa || null,
-        cod_unidade || null,
-        nome_unidade || null
+        cod_empresa,
+        nome_empresa,
+        cod_unidade,
+        nome_unidade
       ]
     );
 
@@ -335,7 +333,7 @@ app.post("/funcionarios", async (req, res) => {
         f.vencimento_cnh,
         f.nome_clinica,
         f.cidade_clinica,
-        f.email_clinica, 
+        f.email_clinica,
         f.telefone_clinica,
         f.lab_toxicologico
       ]
@@ -680,6 +678,29 @@ app.post("/soc/funcionarios/:id/enviar", async (req, res) => {
       erro: "Erro ao enviar funcionário ao SOC",
       detalhe: err.message
     });
+  }
+});
+
+// BUSCAR DADOS DO USUÁRIO PRA TELA DE PERFIL
+app.get("/usuarios/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { rows } = await pool.query(
+      `SELECT id, nome, cpf, email, senha, perfil, cod_empresa, nome_empresa, cod_unidade, nome_unidade
+       FROM usuarios
+       WHERE id = $1`,
+      [id]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ erro: "Usuário não encontrado" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: "Erro ao buscar usuário" });
   }
 });
 

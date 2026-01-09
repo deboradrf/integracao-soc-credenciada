@@ -39,17 +39,32 @@
                             <form id="cadastroForm">
                                 <div class="input-container mb-3">
                                     <label for="nome" class="text">Nome Completo <span class="required">*</span></label>
-                                    <input class="input" type="text" id="nome" required>
+                                    <input class="input" type="text" id="nome" placeholder="Ex: João Fernandes Silva" required>
+                                </div>
+
+                                <div class="input-container mb-3">
+                                    <label for="cpf" class="text">CPF <span class="required">*</span></label>
+                                    <input class="input" type="text" id="cpf" placeholder="Ex: 123.456.789-01" required>
                                 </div>
 
                                 <div class="input-container mb-3">
                                     <label for="email" class="text">E-mail <span class="required">*</span></label>
-                                    <input class="input" type="email" id="email" required>
+                                    <input class="input" type="email" id="email" placeholder="Ex: joao@exemplo.com" required>
                                 </div>
 
                                 <div class="input-container mb-3">
-                                    <label for="password" class="text">Senha <span class="required">*</span></label>
-                                    <input class="input" type="password" id="senha" required>
+                                    <label for="senha" class="text">Senha <span class="required">*</span></label>
+                                    <div class="d-flex gap-2">
+                                        <input class="input flex-fill" type="text" id="senha" required readonly>
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            onclick="gerarSenhaNoInput()">
+                                            Gerar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-warning">
+                                    COPIE A SENHA! Ela será usada pelo usuário no primeiro acesso. Ele poderá alterá-la posteriormente.
                                 </div>
 
                                 <div class="input-container mb-3">
@@ -78,7 +93,7 @@
                                     <button type="submit" class="btn-cadastrar">Cadastrar</button>
                                 </div>
                             </form>
-                            
+
                             <div class="possui-cadastro">
                                 <small>Já possui cadastro? <span><a href="login.html">Faça login</a></span></small>
                             </div>
@@ -116,16 +131,9 @@
         const empresa = document.getElementById("empresa");
         const unidade = document.getElementById("unidade");
 
-        // Empresa e unidade SEMPRE visíveis
         empresaBox.classList.remove("d-none");
 
-        // Carrega empresas ao abrir a página
         carregarEmpresas();
-
-        // (opcional) ainda pode usar o perfil para outras regras
-        perfil.addEventListener("change", () => {
-            // nenhuma lógica de exibir/esconder
-        });
 
         async function carregarEmpresas() {
             empresa.innerHTML = "<option value=''>Carregando...</option>";
@@ -136,11 +144,7 @@
 
             empresa.innerHTML = "<option value=''>Selecione</option>";
             data.forEach(e => {
-                empresa.innerHTML += `
-          <option value="${e.codigo}">
-            ${e.nome}
-          </option>
-        `;
+                empresa.innerHTML += ` <option value="${e.codigo}"> ${e.nome}</option> `;
             });
         }
 
@@ -154,21 +158,27 @@
 
             unidade.innerHTML = "<option value=''>Selecione</option>";
             data.forEach(u => {
-                unidade.innerHTML += `
-          <option value="${u.codigo}">
-            ${u.nome}
-          </option>
-        `;
+                unidade.innerHTML += ` <option value="${u.codigo}"> ${u.nome}</option> `;
             });
+        });
+
+        // MÁSCARA DE CPF
+        const cpfInput = document.getElementById("cpf");
+
+        cpfInput.addEventListener("input", function () {
+            let value = this.value.replace(/\D/g, "");
+
+            if (value.length > 11) value = value.slice(0, 11);
+
+            value = value.replace(/(\d{3})(\d)/, "$1.$2");
+            value = value.replace(/(\d{3})(\d)/, "$1.$2");
+            value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+            this.value = value;
         });
 
         document.getElementById("cadastroForm").addEventListener("submit", async e => {
             e.preventDefault();
-
-            if (!empresa.value || !unidade.value) {
-                alert("Selecione empresa e unidade");
-                return;
-            }
 
             const empresaNome =
                 empresa.options[empresa.selectedIndex]?.text || null;
@@ -178,18 +188,17 @@
 
             const body = {
                 nome: nome.value,
+                cpf: cpf.value,
                 email: email.value,
                 senha: senha.value,
                 perfil: perfil.value,
-
                 cod_empresa: empresa.value,
                 nome_empresa: empresaNome,
-
                 cod_unidade: unidade.value,
                 nome_unidade: unidadeNome
             };
 
-            const res = await fetch(`${API}/usuarios`, {
+            const res = await fetch(`${API}/cadastro`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
@@ -206,6 +215,23 @@
             e.target.reset();
             empresaBox.classList.add("d-none");
         });
+
+        function gerarSenha(tamanho = 10) {
+            const chars =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%!&*";
+            let senha = "";
+
+            for (let i = 0; i < tamanho; i++) {
+                senha += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            return senha;
+        }
+
+        function gerarSenhaNoInput() {
+            const senhaGerada = gerarSenha(10);
+            document.getElementById("senha").value = senhaGerada;
+        }
     </script>
 
 </body>

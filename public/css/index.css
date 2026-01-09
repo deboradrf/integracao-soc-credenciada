@@ -54,7 +54,7 @@ body.blur-main header {
 }
 
 .header-link {
-    color: #fff;
+    color: #FFFFFF;
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -207,7 +207,7 @@ main {
 
 .welcome-subtitle {
     font-size: 14px;
-    color: #5F5D6B;
+    color: #6B7280;
     margin-top: 4px;
 }
 
@@ -278,7 +278,7 @@ main {
     font-weight: 600;
     font-size: 13px;
     line-height: 18px;
-    color: #5F5D6B;
+    color: #6B7280;
 }
 
 .btn-actions {

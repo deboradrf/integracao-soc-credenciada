@@ -1,11 +1,11 @@
-let usuario = null;
+let usuarioLogado = null;
 let solicitacoes = [];
 let solicitacaoAtualId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  usuario = JSON.parse(localStorage.getItem("usuario"));
+  usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
 
-  if (!usuario) {
+  if (!usuarioLogado) {
     window.location.href = "login.html";
     return;
   }
@@ -21,23 +21,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getPrimeiroNomeESobrenome(nomeCompleto) {
     if (!nomeCompleto) return "";
+
     const partes = nomeCompleto.trim().split(" ");
+
     return partes.length >= 2
       ? `${partes[0]} ${partes[1]}`
       : partes[0];
   }
 
   // NOME
-  userNameDropdown.innerText = getPrimeiroNomeESobrenome(usuario.nome);
+  userNameDropdown.innerText = getPrimeiroNomeESobrenome(usuarioLogado.nome);
 
   // EMPRESA E UNIDADE
   dropdownUserExtra.innerHTML = `
-    <div class="company-name">${usuario.nome_empresa}</div>
-    <div class="unit-name">${usuario.nome_unidade}</div>
+    <div class="company-name">${usuarioLogado.nome_empresa}</div>
+    <div class="unit-name">${usuarioLogado.nome_unidade}</div>
   `;
 
   // LÓGICA DOS PERFIS DE ACESSO
-  if (usuario.perfil === "CREDENCIADA") {
+  if (usuarioLogado.perfil === "CREDENCIADA") {
     avatarIcon.classList.add("fa-hospital");
     avatarIconDropdown.classList.add("fa-hospital");
 
@@ -45,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     avatarDrop.classList.add("credenciada");
   }
 
-  if (usuario.perfil === "EMPRESA") {
+  if (usuarioLogado.perfil === "EMPRESA") {
     avatarIcon.classList.add("fa-building");
     avatarIconDropdown.classList.add("fa-building");
 
@@ -227,7 +229,7 @@ async function enviarStatus(status, motivo) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         status,
-        usuario_id: usuario.id,
+        usuario_id: usuarioLogado.id,
         motivo
       })
     }
@@ -257,7 +259,7 @@ async function enviarSOC(id) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        usuario_id: usuario.id
+        usuario_id: usuarioLogado.id
       })
     }
   );
@@ -282,16 +284,6 @@ function formatarData(data) {
     hour: "2-digit",
     minute: "2-digit"
   });
-}
-
-// FUNÇÃO DE EDITAR PERFIL
-function editarPerfil() {
-  alert("Abrir tela de edição de perfil");
-}
-
-// FUNÇÃO DE CONFIGURAÇÃO
-function abrirConfiguracoes() {
-  alert("Abrir configurações");
 }
 
 // FUNÇÃO DE LOGOUT
