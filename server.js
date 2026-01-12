@@ -240,9 +240,19 @@ app.post("/cadastro", async (req, res) => {
 
     res.json({ sucesso: true });
 
-  } catch (err) {
+  }
+  catch (err) {
     if (err.code === "23505") {
-      return res.status(400).json({ erro: "Email já cadastrado" });
+
+      if (err.constraint === "usuarios_email_key") {
+        return res.status(400).json({ erro: "Email já cadastrado" });
+      }
+
+      if (err.constraint === "usuarios_cpf_key") {
+        return res.status(400).json({ erro: "CPF já cadastrado" });
+      }
+
+      return res.status(400).json({ erro: "Dados já cadastrados" });
     }
 
     console.error(err);
@@ -294,7 +304,7 @@ app.post("/funcionarios", async (req, res) => {
 
     const { rows } = await pool.query(
       `
-      INSERT INTO funcionarios
+      INSERT INTO novo_cadastro
         (cod_empresa, nome_empresa, nome_funcionario, data_nascimento,
         sexo, estado_civil, doc_identidade, cpf, matricula, data_admissao,
         tipo_contratacao, cod_categoria, regime_trabalho, cod_unidade, nome_unidade,
@@ -343,7 +353,7 @@ app.post("/funcionarios", async (req, res) => {
 
     await pool.query(
       `
-      INSERT INTO solicitacoes_funcionario
+      INSERT INTO solicitacoes_novo_cadastro
         (funcionario_id, solicitado_por)
       VALUES ($1, $2)
       `,
@@ -373,8 +383,8 @@ app.get("/solicitacoes", async (req, res) => {
         f.cpf,
         sf.status,
         sf.solicitado_em
-      FROM solicitacoes_funcionario sf
-      JOIN funcionarios f ON f.id = sf.funcionario_id
+      FROM solicitacoes_novo_cadastro sf
+      JOIN novo_cadastro f ON f.id = sf.funcionario_id
       ORDER BY sf.solicitado_em DESC
     `);
 
@@ -399,8 +409,8 @@ app.get("/solicitacoes/:id", async (req, res) => {
         u.nome AS solicitado_por_nome,
         ua.nome AS analisado_por_nome,
         sf.analisado_em
-      FROM solicitacoes_funcionario sf
-      JOIN funcionarios f ON f.id = sf.funcionario_id
+      FROM solicitacoes_novo_cadastro sf
+      JOIN novo_cadastro f ON f.id = sf.funcionario_id
       JOIN usuarios u ON u.id = sf.solicitado_por
       LEFT JOIN usuarios ua ON ua.id = sf.analisado_por
       WHERE sf.id = $1
@@ -431,12 +441,11 @@ app.put("/solicitacoes/:id/status", async (req, res) => {
 
   try {
     await pool.query(`
-      UPDATE solicitacoes_funcionario
-      SET
-        status = $1,
-        analisado_por = $2,
-        analisado_em = NOW(),
-        motivo_reprovacao = $3
+      UPDATE solicitacoes_novo_cadastro
+      SET status = $1,
+          analisado_por = $2,
+          analisado_em = NOW(),
+          motivo_reprovacao = $3
       WHERE id = $4
     `, [
       status,
@@ -467,8 +476,8 @@ app.get("/minhas-solicitacoes/:usuarioId", async (req, res) => {
         sf.motivo_reprovacao,
         sf.analisado_em,
         ua.nome AS analisado_por_nome
-      FROM solicitacoes_funcionario sf
-      JOIN funcionarios f ON f.id = sf.funcionario_id
+      FROM solicitacoes_novo_cadastro sf
+      JOIN novo_cadastro f ON f.id = sf.funcionario_id
       LEFT JOIN usuarios ua ON ua.id = sf.analisado_por
       WHERE sf.solicitado_por = $1
       ORDER BY sf.solicitado_em DESC
@@ -491,7 +500,7 @@ app.put("/solicitacoes/:id/editar", async (req, res) => {
 
     // 1️⃣ Atualiza dados do funcionário
     await pool.query(`
-      UPDATE funcionarios SET
+      UPDATE novo_cadastro SET
         nome_funcionario = $1,
         data_nascimento = $2,
         sexo = $3,
@@ -509,7 +518,7 @@ app.put("/solicitacoes/:id/editar", async (req, res) => {
         nome_cargo = $15
       WHERE id = (
         SELECT funcionario_id
-        FROM solicitacoes_funcionario
+        FROM solicitacoes_novo_cadastro
         WHERE id = $16
       )
     `, [
@@ -533,11 +542,10 @@ app.put("/solicitacoes/:id/editar", async (req, res) => {
 
     // 2️⃣ Atualiza status da solicitação
     await pool.query(`
-      UPDATE solicitacoes_funcionario
-      SET
-        status = 'PENDENTE_REAVALIACAO',
-        analisado_por = NULL,
-        analisado_em = NULL
+      UPDATE solicitacoes_novo_cadastro
+      SET status = 'PENDENTE_REAVALIACAO',
+          analisado_por = NULL,
+          analisado_em = NULL
       WHERE id = $1
     `, [id]);
 
@@ -559,8 +567,8 @@ app.post("/soc/funcionarios/:id/enviar", async (req, res) => {
     const { rows } = await pool.query(
       `
       SELECT f.*
-      FROM solicitacoes_funcionario sf
-      JOIN funcionarios f ON f.id = sf.funcionario_id
+      FROM solicitacoes_novo_cadastro sf
+      JOIN novo_cadastro f ON f.id = sf.funcionario_id
       WHERE sf.id = $1
       `,
       [id]
@@ -645,7 +653,7 @@ app.post("/soc/funcionarios/:id/enviar", async (req, res) => {
     };
 
     const { status } = await pool.query(
-      `SELECT status FROM solicitacoes_funcionario WHERE id = $1`,
+      `SELECT status FROM solicitacoes_novo_cadastro WHERE id = $1`,
       [id]
     ).then(r => r.rows[0]);
 
@@ -660,11 +668,10 @@ app.post("/soc/funcionarios/:id/enviar", async (req, res) => {
 
     await pool.query(
       `
-      UPDATE solicitacoes_funcionario
-      SET
-        status = 'ENVIADO_SOC',
-        enviado_soc_por = $1,
-        enviado_soc_em = NOW()
+      UPDATE solicitacoes_novo_cadastro
+      SET status = 'ENVIADO_SOC',
+          enviado_soc_por = $1,
+          enviado_soc_em = NOW()
       WHERE id = $2
       `,
       [req.body.usuario_id, id]
@@ -679,6 +686,71 @@ app.post("/soc/funcionarios/:id/enviar", async (req, res) => {
       detalhe: err.message
     });
   }
+});
+
+// VERIFICAR FUNCIONÁRIO NO SOC POR CPF DENTRO DA EMPRESA LOGADA (EXPORTA DADOS)
+app.get("/soc/funcionario-por-cpf/:cpf/:empresaUsuario", async (req, res) => {
+  const cpf = req.params.cpf.replace(/\D/g, "");
+  const empresaUsuario = req.params.empresaUsuario;
+
+  const parametro = JSON.stringify({
+    empresa: "412429", // empresa principal
+    codigo: "211470",
+    chave: "f25b0630015894783d19",
+    tipoSaida: "json",
+    cpf
+  });
+
+  const response = await axios.get(
+    "https://ws1.soc.com.br/WebSoc/exportadados",
+    { params: { parametro } }
+  );
+
+  const registros = Array.isArray(response.data)
+    ? response.data
+    : [response.data];
+
+  // 🔥 AQUI está a lógica correta
+  const funcionarioNaEmpresa = registros.find(
+    f => String(f.CODIGOEMPRESA) === String(empresaUsuario)
+  );
+
+  if (!funcionarioNaEmpresa) {
+    return res.json({
+      existe: false,
+      mensagem: "Funcionário NÃO encontrado nesta empresa."
+    });
+  }
+
+  return res.json({
+    existe: true,
+    funcionario: {
+      nome: funcionarioNaEmpresa.NOME,
+      cpf: funcionarioNaEmpresa.CPFFUNCIONARIO,
+      empresa: funcionarioNaEmpresa.NOMEEMPRESA,
+      situacao: funcionarioNaEmpresa.SITUACAO,
+      matricula: funcionarioNaEmpresa.MATRICULAFUNCIONARIO
+    }
+  });
+});
+
+app.get("/soc/debug-funcionario/:cpf", async (req, res) => {
+  const cpf = req.params.cpf.replace(/\D/g, "");
+
+  const parametro = JSON.stringify({
+    empresa: "412429",
+    codigo: "211470",
+    chave: "f25b0630015894783d19",
+    tipoSaida: "json",
+    cpf
+  });
+
+  const response = await axios.get(
+    "https://ws1.soc.com.br/WebSoc/exportadados",
+    { params: { parametro } }
+  );
+
+  res.json(response.data);
 });
 
 // BUSCAR DADOS DO USUÁRIO PRA TELA DE PERFIL
