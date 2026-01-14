@@ -588,6 +588,86 @@ app.get("/minhas-solicitacoes/:usuarioId", async (req, res) => {
   }
 });
 
+// EDITAR SOLICITAÇÃO CADASTRO
+app.put("/solicitacoes/cadastro/:id/editar", async (req, res) => {
+  const { id } = req.params;
+  const f = req.body;
+
+  try {
+    await pool.query("BEGIN");
+
+    await pool.query(`
+      UPDATE novo_cadastro
+      SET
+        nome_funcionario = $1,
+        data_nascimento = $2,
+        sexo = $3,
+        estado_civil = $4,
+        doc_identidade = $5,
+        cpf = $6,
+        matricula = $7,
+        data_admissao = $8,
+        tipo_contratacao = $9,
+        regime_trabalho = $10,
+        nome_empresa = $11,
+        nome_unidade = $12,
+        nome_setor = $13,
+        nome_cargo = $14,
+        tipo_exame = $15,
+        nome_clinica = $16,
+        cidade_clinica = $17,
+        email_clinica = $18,
+        telefone_clinica = $19,
+        lab_toxicologico = $20
+      WHERE id = (
+        SELECT funcionario_id
+        FROM solicitacoes_novo_cadastro
+        WHERE id = $21
+      )
+    `, [
+      f.nome_funcionario,
+      f.data_nascimento,
+      f.sexo,
+      f.estado_civil,
+      f.doc_identidade,
+      f.cpf,
+      f.matricula,
+      f.data_admissao,
+      f.tipo_contratacao,
+      f.regime_trabalho,
+      f.nome_empresa,
+      f.nome_unidade,
+      f.nome_setor,
+      f.nome_cargo,
+      f.tipo_exame,
+      f.nome_clinica,
+      f.cidade_clinica,
+      f.email_clinica,
+      f.telefone_clinica,
+      f.lab_toxicologico,
+      id
+    ]);
+
+    await pool.query(`
+      UPDATE solicitacoes_novo_cadastro
+      SET
+        status = 'PENDENTE_REAVALIACAO',
+        analisado_por = NULL,
+        analisado_em = NULL
+      WHERE id = $1
+    `, [id]);
+
+    await pool.query("COMMIT");
+
+    res.json({ sucesso: true });
+
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    console.error(err);
+    res.status(500).json({ erro: "Erro ao editar cadastro" });
+  }
+});
+
 // EDITAR SOLICITAÇÃO ASO
 app.put("/solicitacoes/aso/:id/editar", async (req, res) => {
   const { id } = req.params;

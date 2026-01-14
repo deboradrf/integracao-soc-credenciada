@@ -112,13 +112,13 @@ function renderizarTabela(lista) {
 
     if (s.tipo === "NOVO_CADASTRO") {
       iconeTipo = `
-        <i class="fa-solid fa-user-plus" style="color: #F1AE33" title="Novo cadastro"></i>
+        <i class="fa-solid fa-user-plus fa-lg" style="color: #F1AE33" title="Novo cadastro"></i>
       `;
     }
 
     if (s.tipo === "ASO") {
       iconeTipo = `
-        <i class="fa-solid fa-file-circle-plus" style="color: #F1AE33"title="ASO"></i>
+        <i class="fa-solid fa-file-circle-plus fa-lg" style="color: #F1AE33"title="ASO"></i>
       `;
     }
 
@@ -129,21 +129,15 @@ function renderizarTabela(lista) {
       <td>${s.nome_funcionario}</td>
       <td>${s.cpf}</td>
       <td>
-        <span class="status-pill ${statusClass}">
-          ${s.status}
-        </span>
+        <span class="status-pill ${statusClass}">${s.status}</span>
       </td>
       <td class="actions">
-        <button class="btn-outline" onclick="verDetalhes(${s.solicitacao_id}, '${s.tipo}')">
-          Detalhes
+        <button onclick="verDetalhes(${s.solicitacao_id}, '${s.tipo}')">
+          Analisar
         </button>
 
-        <button class="btn-primary"
-          ${s.status !== "APROVADO" ? "disabled" : ""}
-          ${s.status === "APROVADO"
-        ? `onclick="enviarSOC(${s.solicitacao_id})"`
-        : ""}>
-          Enviar
+        <button ${s.status !== "APROVADO" ? "disabled" : ""} ${s.status === "APROVADO" ? `onclick="enviarSOC(${s.solicitacao_id})"` : ""}>
+          Enviar SOC
         </button>
       </td>
     `;

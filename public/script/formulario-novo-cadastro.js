@@ -294,7 +294,7 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
     });
 
     document.getElementById("mensagem").innerHTML =
-      "<div class='alert alert-success'>Cadastro enviado com sucesso!</div>";
+    "<div class='alert alert-success'>Cadastro enviado com sucesso!</div>";
 
     document.getElementById("formCadastro").reset();
 
@@ -308,12 +308,16 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
 const nomeInput = document.getElementById("nome");
 
 nomeInput.addEventListener("input", function () {
-  let valor = this.value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase();
+  let valor = this.value.toUpperCase();
 
-  valor = valor.replace(/[^A-Z\s]/g, "");
+  valor = valor.replace(/[^A-ZÇÀ-Ÿ\s]/g, "");
+
+  valor = valor
+    .replace(/[ÁÀÂÃ]/g, "A")
+    .replace(/[ÉÈÊ]/g, "E")
+    .replace(/[ÍÌÎ]/g, "I")
+    .replace(/[ÓÒÔÕ]/g, "O")
+    .replace(/[ÚÙÛ]/g, "U");
 
   this.value = valor;
 });

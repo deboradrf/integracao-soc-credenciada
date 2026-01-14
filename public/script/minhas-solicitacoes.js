@@ -229,6 +229,52 @@ function preencherModalEditarASO(s) {
 }
 
 // FUNÇÃO PARA SALVAR EDIÇÃO NOVO CADASTRO
+async function salvarEdicaoCadastro() {
+  const id = document.getElementById("editCadId").value;
+
+  const dados = {
+    nome_funcionario: document.getElementById("editCadNomeFuncionario").value,
+    data_nascimento: tratarData(document.getElementById("editCadDataNascimento").value),
+    sexo: document.getElementById("editCadSexo").value,
+    estado_civil: document.getElementById("editCadEstadoCivil").value,
+    doc_identidade: document.getElementById("editCadDocIdentidade").value,
+    cpf: document.getElementById("editCadCPF").value,
+    matricula: document.getElementById("editCadMatricula").value,
+    data_admissao: tratarData(document.getElementById("editCadDataAdmissao").value),
+    tipo_contratacao: document.getElementById("editCadTipoContratacao").value,
+    regime_trabalho: document.getElementById("editCadRegimeTrabalho").value,
+    nome_empresa: document.getElementById("editCadNomeEmpresa").value,
+    nome_unidade: document.getElementById("editCadNomeUnidade").value,
+    nome_setor: document.getElementById("editCadNomeSetor").value,
+    nome_cargo: document.getElementById("editCadNomeCargo").value,
+    tipo_exame: document.getElementById("editCadTipoExame").value,
+    nome_clinica: document.getElementById("editCadNomeClinica").value,
+    cidade_clinica: document.getElementById("editCadCidadeClinica").value,
+    email_clinica: document.getElementById("editCadEmailClinica").value,
+    telefone_clinica: document.getElementById("editCadTelefoneClinica").value,
+    lab_toxicologico: document.getElementById("editCadLabToxicologico").value,
+    status: "PENDENTE"
+  };
+
+  const res = await fetch(`http://localhost:3001/solicitacoes/cadastro/${id}/editar`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dados)
+  });
+
+  const resposta = await res.json();
+
+  if (!res.ok) {
+    alert(resposta.erro || "Erro ao salvar edição");
+    return;
+  }
+
+  bootstrap.Modal
+    .getInstance(document.getElementById("modalEditarCadastro"))
+    .hide();
+
+  carregarHistorico();
+}
 
 // FUNÇÃO PARA SALVAR EDIÇÃO ASO
 async function salvarEdicaoASO() {
