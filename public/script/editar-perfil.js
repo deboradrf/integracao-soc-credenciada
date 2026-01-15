@@ -1,3 +1,5 @@
+let dadosOriginais = {};
+
 // DROPDOWN DO PERFIL
 document.addEventListener("DOMContentLoaded", () => {
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
@@ -87,30 +89,128 @@ function preencherTela(user) {
     document.getElementById("perfilNome").innerText = user.nome;
 
     if (user.perfil === "EMPRESA") {
-        document.getElementById("perfilTipo").innerText = user.nome_empresa;
+        document.getElementById("perfilTipo").innerText = "Empresa";
     }
     if (user.perfil === "CREDENCIADA") {
-        document.getElementById("perfilTipo").innerText = "Usuário";
+        document.getElementById("perfilTipo").innerText = "Credenciada";
     }
 
-    document.getElementById("cpf").innerText = user.cpf;
-    document.getElementById("email").innerText = user.email;
-    document.getElementById("senha").innerText = user.senha;
+    document.getElementById("cpf").value = user.cpf;
+    document.getElementById("email").value = user.email;
+    document.getElementById("senha").value = user.senha;
 
     ajustarIcone(user.perfil);
 }
 
 function ajustarIcone(perfil) {
     const iconCard = document.getElementById("avatarIconCard");
+    const avatarCard = document.querySelector(".avatar");
 
-    if (!iconCard) return;
+    if (!iconCard || !avatarCard) return;
 
     iconCard.className = "fa-solid";
+    avatarCard.classList.remove("empresa", "credenciada");
 
     if (perfil === "EMPRESA") {
         iconCard.classList.add("fa-building");
+        avatarCard.classList.add("empresa");
     }
+
     if (perfil === "CREDENCIADA") {
         iconCard.classList.add("fa-hospital");
+        avatarCard.classList.add("credenciada");
     }
+}
+
+// FUNÇÃO PARA ENTRAR NO MODO EDIÇÃO DE PERFIL
+function editarPerfil() {
+    const card = document.querySelector(".card");
+    card.classList.add("editando");
+
+    const email = document.getElementById("email");
+    const senha = document.getElementById("senha");
+
+    // guarda valores atuais
+    dadosOriginais.email = email.value;
+    dadosOriginais.senha = senha.value;
+
+    habilitarInput("email");
+    habilitarInput("senha");
+
+    // mostra botões
+    document.getElementById("acoesEdicao").classList.remove("d-none");
+}
+
+// FUNÇÃO PARA TRANSFORMAR EMAIL E SENHA EM INPUT PARA EDIÇÃO
+function habilitarInput(id) {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    input.removeAttribute("readonly");
+    input.focus();
+}
+
+// FUNÇÃO PARA CANCELAR O MODO DE EDIÇÃO DE PERFIL
+function cancelarEdicao() {
+    const card = document.querySelector(".card");
+    card.classList.remove("editando");
+
+    const email = document.getElementById("email");
+    const senha = document.getElementById("senha");
+
+    email.value = dadosOriginais.email;
+    senha.value = dadosOriginais.senha;
+
+    email.setAttribute("readonly", true);
+    senha.setAttribute("readonly", true);
+
+    document.getElementById("acoesEdicao").classList.add("d-none");
+}
+
+// FUNÇÃO PARA SALVAR EDIÇÃO
+async function salvarEdicao() {
+    const API = "http://localhost:3001";
+    const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
+
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+
+    const res = await fetch(`${API}/usuarios/${usuarioLogado.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha })
+    });
+
+    if (!res.ok) {
+        alert("Erro ao salvar dados");
+        return;
+    }
+
+    document.querySelector(".card").classList.remove("editando");
+    document.getElementById("email").setAttribute("readonly", true);
+    document.getElementById("senha").setAttribute("readonly", true);
+    document.getElementById("acoesEdicao").classList.add("d-none");
+
+    alert("Dados atualizados com sucesso!");
+}
+
+// MOSTRAR / OCULTAR SENHA
+function toggleSenha() {
+    const input = document.getElementById("senha");
+    const icon = document.getElementById("toggleSenha");
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+    }
+}
+
+// FUNÇÃO DE LOGOUT
+function logout() {
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("empresaCodigo");
+  window.location.href = "login.html";
 }

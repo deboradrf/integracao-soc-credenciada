@@ -155,13 +155,21 @@ body.blur-main header {
     border-radius: 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
     cursor: pointer;
     font-size: 0.95rem;
 }
 
 .profile-list li:hover {
     background: #F1F1F1;
+}
+
+.profile-list a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.profile-list a i {
+    margin-right: 5px;
 }
 
 .profile-list .between {
@@ -182,7 +190,7 @@ hr {
     color: #6B7280;
 }
 
-.title-wrapper {
+.title {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -192,7 +200,7 @@ hr {
 h3 {
   position: relative;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 22px;
   color: #000000;
   margin-bottom: 15px;
 }
@@ -337,6 +345,13 @@ td {
     background: #ef4444;
 }
 
+.actions-wrapper {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
 .actions button {
     background-color: #FFFFFF;
     border: 1px solid #E5E7EB;
@@ -371,7 +386,7 @@ td {
     background-color: #FFFFFF;
     /*background: linear-gradient(135deg, #F1AE33 0%, #f8bc3a 40%, #F3B84A 100%);*/
     border-bottom: none;
-    /*box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);*/
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
 }
 
 .modal-header h3 {
@@ -396,6 +411,8 @@ td {
     display: flex;
     justify-content: center;
     border-top: none;
+    box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.15);
+    padding: 16px;
 }
 
 .btn-reprovar {

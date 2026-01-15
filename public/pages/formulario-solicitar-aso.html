@@ -56,10 +56,30 @@
                     <hr>
 
                     <ul class="profile-list">
-                        <li><a href="editar-perfil.html"><i class="fa-regular fa-user"></i> Editar Perfil</a></li>
-                        <li><i class="fa-regular fa-bell"></i> Notificações</li>
-                        <li><i class="fa-solid fa-gear"></i> Configurações</li>
-                        <li onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</li>
+                        <li>
+                            <a href="editar-perfil.html">
+                                <i class="fa-regular fa-user"></i>
+                                Editar Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa-regular fa-bell"></i>
+                                Notificações
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa-solid fa-gear"></i>
+                                Configurações
+                            </a>
+                        </li>
+                        <li onclick="logout()">
+                            <a href="#">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                Logout
+                            </a>
+                        </li>
                     </ul>
 
                     <hr>
@@ -72,8 +92,13 @@
 
     <main>
         <div class="container mt-5">
-            <h4 class="text-center">Formulário de Solicitação de ASO</h4>
-            <p class="text-center">Confirme os dados do funcionário e selecione o tipo de ASO desejado para gerar a solicitação</p>
+            <div class="title">
+                <h3>Formulário de Solicitação de ASO</h3>
+                <p class="subtitle">
+                    Confirme os dados do funcionário e selecione o tipo de ASO desejado para gerar a
+                    solicitação
+                </p>
+            </div>
 
             <form id="formCadastro" class="mt-4">
                 <div class="card mb-4">
@@ -202,7 +227,8 @@
                                 <select id="tipo_exame">
                                     <option value="">Selecione...</option>
                                     <option value="PERIODICO">Periódico</option>
-                                    <option value="MUDANCA_RISCOS_OPERACIONAIS">Mudança de Função / Riscos Operacionais</option>
+                                    <option value="MUDANCA_RISCOS_OPERACIONAIS">Mudança de Função / Riscos Operacionais
+                                    </option>
                                     <option value="TOXICOLOGICO">Toxicológico</option>
                                     <option value="CONSULTA_ASSISTENCIAL">Consulta Assistencial</option>
                                     <option value="DEMISSIONAL">Demissional</option>

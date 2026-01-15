@@ -339,7 +339,9 @@ function tratarData(valor) {
 }
 
 function formatarData(data) {
-  return new Date(data).toLocaleString("pt-BR");
+  if (!data) return "";
+
+  return new Date(data).toLocaleDateString("pt-BR");
 }
 
 // FUNÇÃO DE LOGOUT

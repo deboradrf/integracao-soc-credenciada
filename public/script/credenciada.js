@@ -132,13 +132,16 @@ function renderizarTabela(lista) {
         <span class="status-pill ${statusClass}">${s.status}</span>
       </td>
       <td class="actions">
-        <button onclick="verDetalhes(${s.solicitacao_id}, '${s.tipo}')">
-          Analisar
-        </button>
+        <div class="actions-wrapper">
+          <button onclick="verDetalhes(${s.solicitacao_id}, '${s.tipo}')">
+            Analisar
+          </button>
 
-        <button ${s.status !== "APROVADO" ? "disabled" : ""} ${s.status === "APROVADO" ? `onclick="enviarSOC(${s.solicitacao_id})"` : ""}>
-          Enviar SOC
-        </button>
+          <button ${s.status !== "APROVADO" ? "disabled" : ""} 
+            ${s.status === "APROVADO" ? `onclick="enviarSOC(${s.solicitacao_id})"` : ""}>
+            Enviar SOC
+          </button>
+        </div>
       </td>
     `;
 
@@ -239,16 +242,28 @@ function preencherModal(s, tipo) {
   }
 
   // STATUS
-  const linha =
+  const alertStatus =
     tipo === "ASO"
       ? document.getElementById("linha_aprovacao_aso")
       : document.getElementById("linha_aprovacao_cadastro");
 
-  if (s.status === "APROVADO" || s.status === "REPROVADO") {
-    linha.textContent =
-      `${s.status} por ${s.analisado_por_nome} em ${formatarData(s.analisado_em)}`;
-  } else {
-    linha.textContent = "Solicitação ainda não analisada";
+  alertStatus.className = "alert";
+
+  if (s.status === "APROVADO") {
+    alertStatus.style.display = "block";
+    alertStatus.className = "alert alert-success";
+    alertStatus.textContent =
+      `Aprovado por ${s.analisado_por_nome} em ${formatarData(s.analisado_em)}`;
+
+  } else if (s.status === "REPROVADO") {
+    alertStatus.style.display = "block";
+    alertStatus.className = "alert alert-danger";
+    alertStatus.textContent =
+      `Reprovado por ${s.analisado_por_nome} em ${formatarData(s.analisado_em)}`;
+
+  } else if (s.status === "PENDENTE") {
+    alertStatus.style.display = "none";
+    alertStatus.textContent = "";
   }
 
   // MOSTAR MOTIVO DE REPROVAÇÃO NA REAVALIAÇÃO

@@ -886,8 +886,7 @@ app.get("/soc/funcionario-por-cpf/:cpf/:empresaUsuario", async (req, res) => {
     const parametro = JSON.stringify({
       ...EXPORTA_FUNCIONARIOS,
       empresaTrabalho: empresaUsuario, // EMPRESA LOGADA
-      cpf,
-      situacaoFuncionario: "S" // SOMENTE ATIVO
+      cpf
     });
 
     const response = await axios.get(SOC_EXPORTA_URL, {
@@ -898,7 +897,11 @@ app.get("/soc/funcionario-por-cpf/:cpf/:empresaUsuario", async (req, res) => {
       ? response.data
       : [response.data];
 
-    if (!registros.length) {
+    if (
+      !registros.length ||
+      !registros[0] ||
+      !registros[0].CPFFUNCIONARIO
+    ) {
       return res.json({ existe: false });
     }
 
@@ -1092,6 +1095,33 @@ app.post("/solicitar-aso", async (req, res) => {
     await pool.query("ROLLBACK");
     console.error(err);
     res.status(500).json({ erro: "Erro ao gerar solicitação de ASO" });
+  }
+});
+
+// ATUALIZAR PERFIL (EMAIL E SENHA)
+app.put("/usuarios/:id", async (req, res) => {
+  const { id } = req.params;
+  const { email, senha } = req.body;
+
+  if (!email || !senha) {
+    return res.status(400).json({ erro: "Email e senha são obrigatórios" });
+  }
+
+  try {
+    await pool.query(
+      `
+      UPDATE usuarios
+      SET email = $1,
+          senha = $2
+      WHERE id = $3
+      `,
+      [email, senha, id]
+    );
+
+    res.json({ sucesso: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: "Erro ao atualizar perfil" });
   }
 });
 

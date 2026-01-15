@@ -57,10 +57,30 @@
                     <hr>
 
                     <ul class="profile-list">
-                        <li><a href="editar-perfil.html"><i class="fa-regular fa-user"></i> Editar Perfil</a></li>
-                        <li><i class="fa-regular fa-bell"></i> Notificações</li>
-                        <li><i class="fa-solid fa-gear"></i> Configurações</li>
-                        <li onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</li>
+                        <li>
+                            <a href="editar-perfil.html">
+                                <i class="fa-regular fa-user"></i>
+                                Editar Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa-regular fa-bell"></i>
+                                Notificações
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fa-solid fa-gear"></i>
+                                Configurações
+                            </a>
+                        </li>
+                        <li onclick="logout()">
+                            <a href="#">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                Logout
+                            </a>
+                        </li>
                     </ul>
 
                     <hr>
@@ -72,14 +92,14 @@
     </header>
 
     <main>
-        <div class="container-fluid p-4">
-            <div class="title-wrapper">
+        <div class="container-fluid mt-5 px-4">
+            <div class="title">
                 <h3>Solicitações Cadastradas</h3>
                 <p class="subtitle">
                     Visualize, filtre e gerencie todas as solicitações de ASOs e cadastro de funcionários
                 </p>
             </div>
-            
+
             <div class="filters">
                 <div class="filter-group">
                     <label>Status</label>
@@ -158,7 +178,7 @@
 
     <!-- MODAL DETALHES - NOVO CADASTRO -->
     <div class="modal fade" id="modalDetalhesNovoCadastro" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
 
                 <div class="modal-header">
@@ -168,105 +188,109 @@
 
                 <div class="modal-body">
                     <div class="row g-3">
-                        <div class="col-md-12">
+                        <div class="col-12">
+                            <p id="linha_aprovacao_cadastro" class="text-muted small"></p>
+                        </div>
+                        <div class="col-12">
                             <label class="form-label">Nome Completo</label>
                             <input id="cadastro_nome_funcionario" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Data de Nascimento</label>
                             <input id="cadastro_data_nascimento" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Sexo</label>
                             <input id="cadastro_sexo" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Estado Civil</label>
                             <input id="cadastro_estado_civil" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Documento de Identidade - UF</label>
                             <input id="cadastro_doc_identidade" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">CPF</label>
                             <input id="cadastro_cpf" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Matrícula eSocial</label>
                             <input id="cadastro_matricula" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Data de Admissão</label>
                             <input id="cadastro_data_admissao" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Tipo Contratação</label>
                             <input id="cadastro_tipo_contratacao" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Regime de Trabalho</label>
                             <input id="cadastro_regime_trabalho" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Empresa</label>
                             <input id="cadastro_nome_empresa" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Unidade</label>
                             <input id="cadastro_nome_unidade" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Setor</label>
                             <input id="cadastro_nome_setor" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Cargo</label>
                             <input id="cadastro_nome_cargo" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Tipo de Exame</label>
                             <input id="cadastro_tipo_exame" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Nome da Clínica</label>
                             <input id="cadastro_nome_clinica" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Cidade da Clínica</label>
                             <input id="cadastro_cidade_clinica" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Email da Clínica</label>
                             <input id="cadastro_email_clinica" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Telefone da Clínica</label>
                             <input id="cadastro_telefone_clinica" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-12">
-                            <label class="form-label">Nome do laboratório ou município para realização do exame toxicológico</label>
+                        <div class="col-12">
+                            <label class="form-label">Nome do laboratório ou município para realização do exame
+                                toxicológico</label>
                             <input id="cadastro_lab_toxicologico" class="form-control" disabled>
-                        </div>  
+                        </div>
                     </div>
                 </div>
 
@@ -278,15 +302,11 @@
                     <button class="btn-aprovar">
                         Aprovar
                     </button>
-                </div>
 
-                <div class="col-12 p-3">
-                    <label class="form-label">Motivo da reprovação</label>
-                    <textarea id="motivoReprovacaoCadastro" class="form-control" rows="2"></textarea>
-                </div>
-
-                <div class="col-12 mx-3 text-center">
-                    <p id="linha_aprovacao_cadastro" class="text-muted small"></p>
+                    <div class="col-12">
+                        <label class="form-label">Motivo da reprovação</label>
+                        <textarea id="motivoReprovacaoCadastro" class="form-control" rows="2"></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -294,7 +314,7 @@
 
     <!-- MODAL DETALHES - ASO-->
     <div class="modal fade" id="modalDetalhesASO" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
 
                 <div class="modal-header">
@@ -304,78 +324,83 @@
 
                 <div class="modal-body">
                     <div class="row g-3">
-                        <div class="col-md-12">
+                        <div class="col-12">
+                            <p id="linha_aprovacao_aso" class="text-muted small"></p>
+                        </div>
+
+                        <div class="col-12">
                             <label class="form-label">Nome Completo</label>
                             <input id="aso_nome_funcionario" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Data de Nascimento</label>
                             <input id="aso_data_nascimento" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">CPF</label>
                             <input id="aso_cpf" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Matrícula eSocial</label>
                             <input id="aso_matricula" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Data de Admissão</label>
                             <input id="aso_data_admissao" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-12">
                             <label class="form-label">Empresa</label>
                             <input id="aso_nome_empresa" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-12">
                             <label class="form-label">Unidade</label>
                             <input id="aso_nome_unidade" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Setor</label>
                             <input id="aso_nome_setor" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Cargo</label>
                             <input id="aso_nome_cargo" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Tipo de Exame</label>
                             <input id="aso_tipo_exame" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Nome da Clínica</label>
                             <input id="aso_nome_clinica" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Cidade da Clínica</label>
                             <input id="aso_cidade_clinica" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Email da Clínica</label>
                             <input id="aso_email_clinica" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <label class="form-label">Telefone da Clínica</label>
                             <input id="aso_telefone_clinica" class="form-control" disabled>
                         </div>
 
-                        <div class="col-md-12">
-                            <label class="form-label">Nome do laboratório ou município para realização do exame toxicológico</label>
+                        <div class="col-12">
+                            <label class="form-label">Nome do laboratório ou município para realização do exame
+                                toxicológico</label>
                             <input id="aso_lab_toxicologico" class="form-control" disabled>
                         </div>
                     </div>
@@ -389,15 +414,12 @@
                     <button class="btn-aprovar">
                         Aprovar
                     </button>
-                </div>
 
-                <div class="col-12 p-3">
-                    <label class="form-label">Motivo da reprovação</label>
-                    <textarea id="motivoReprovacaoASO" class="form-control" rows="2" placeholder="Digite o motivo da reprovação"></textarea>
-                </div>
-
-                <div class="col-12 mx-3 text-center">
-                    <p id="linha_aprovacao_aso" class="text-muted small"></p>
+                    <div class="col-12">
+                        <label class="form-label">Motivo da reprovação</label>
+                        <textarea id="motivoReprovacaoASO" class="form-control" rows="2"
+                            placeholder="Digite o motivo da reprovação"></textarea>
+                    </div>
                 </div>
             </div>
         </div>

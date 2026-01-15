@@ -98,12 +98,13 @@ async function buscarCPF() {
 
     const data = await res.json();
 
+    // ❌ CPF NÃO EXISTE
     if (!data.existe) {
       resultado.innerHTML = `
         <div class="alert alert-info">
           Funcionário NÃO encontrado nesta empresa.
         </div>
-        
+
         <button class="btn btn-success mt-2"
           onclick="window.location.href='formulario.html'">
           Cadastrar Funcionário
@@ -114,6 +115,39 @@ async function buscarCPF() {
 
     const f = data.funcionario;
 
+    // ⚠️ CPF EXISTE MAS ESTÁ INATIVO
+    if (f.situacao?.toLowerCase() === "inativo") {
+      resultado.innerHTML = `
+        <div class="card shadow">
+          <div class="card-body">
+
+            <div class="alert alert-warning">
+              Funcionário encontrado, porém está <b>INATIVO</b> no SOC.
+            </div>
+
+            <ul class="list-group">
+              <li class="list-group-item"><b>Nome:</b> ${f.nome}</li>
+              <li class="list-group-item"><b>CPF:</b> ${f.cpf}</li>
+              <li class="list-group-item"><b>Matrícula:</b> ${f.matricula}</li>
+              <li class="list-group-item"><b>Situação:</b> ${f.situacao}</li>
+            </ul>
+
+            <div class="alert alert-secondary mt-3">
+              Não é possível solicitar ASO para funcionários inativos. Solicite um novo cadastro
+            </div>
+
+            <button class="btn btn-success mt-2"
+              onclick="window.location.href='formulario.html'">
+              Cadastrar Funcionário
+            </button>
+
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // ✅ CPF EXISTE E ESTÁ ATIVO
     const funcionarioASO = {
       nome: f.nome,
       cpf: f.cpf,
@@ -132,7 +166,7 @@ async function buscarCPF() {
         <div class="card-body">
 
           <div class="alert alert-success">
-            Funcionário encontrado
+            Funcionário ATIVO encontrado
           </div>
 
           <ul class="list-group mb-3">
