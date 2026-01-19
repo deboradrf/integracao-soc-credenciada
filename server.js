@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
@@ -14,12 +16,15 @@ app.use(express.json());
 
 // BANCO DE DADOS
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "cadastro_funcionarios",
-  password: "salubrita",
-  port: 5432
-});
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+})
+
+pool.query('SELECT 1')
+  .then(() => console.log('🔥 Conectado ao Supabase'))
+  .catch(err => console.error('❌ Erro de conexão', err));
 
 // SOC – SOAP
 const WSDL_URL =
