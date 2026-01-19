@@ -79,11 +79,6 @@ const EXPORTA_FUNCIONARIOS = {
 
 const parser = new XMLParser({ ignoreAttributes: false });
 
-// TESTE
-app.get("/", (req, res) => {
-  res.send("🚀 API Cadastro Funcionários rodando");
-});
-
 // EXPORTA EMPRESAS
 app.get("/empresas", async (req, res) => {
   try {
@@ -1147,6 +1142,8 @@ app.put("/usuarios/:id", async (req, res) => {
   }
 });
 
-app.listen(3001, () => {
-  console.log("🚀 API rodando em http://localhost:3001");
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`🚀 API rodando na porta ${PORT}`);
 });
