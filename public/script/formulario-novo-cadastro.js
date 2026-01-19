@@ -7,7 +7,7 @@ const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
 
 if (!usuarioLogado) {
   alert("Sessão expirada. Faça login novamente.");
-  window.location.href = "/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 // DROPDOWN DO PERFIL
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   if (!usuario) {
-    window.location.href = "/login.html";
+    window.location.href = "/pages/login.html";
     return;
   }
 
@@ -92,7 +92,7 @@ async function carregarNomeEmpresa() {
   if (!empresaCodigo) return;
 
   try {
-    const res = await fetch("http://localhost:3001/empresas");
+    const res = await fetch("https://integracao-soc-credenciada-front.onrender.com/empresas");
     const empresas = await res.json();
 
     const empresaSelecionada = empresas.find(
@@ -112,7 +112,7 @@ async function carregarNomeEmpresa() {
 async function carregarUnidades() {
   if (!empresaCodigo) return;
 
-  const res = await fetch(`http://localhost:3001/unidades/${empresaCodigo}`);
+  const res = await fetch(`https://integracao-soc-credenciada-front.onrender.com/unidades/${empresaCodigo}`);
   const unidades = await res.json();
 
   const select = document.getElementById("unidadeSelect");
@@ -145,7 +145,7 @@ async function carregarSetores() {
   if (!empresaCodigo) return;
 
   try {
-    const res = await fetch(`http://localhost:3001/setores/${empresaCodigo}`);
+    const res = await fetch(`https://integracao-soc-credenciada-front.onrender.com/setores/${empresaCodigo}`);
     const setores = await res.json();
 
     const select = document.getElementById("setorSelect");
@@ -165,7 +165,7 @@ async function carregarSetores() {
 
 // CARREGAR CARGOS (TODAS AS EMPRESAS - não tem filtro por empresa)
 async function carregarCargos() {
-  const res = await fetch(`http://localhost:3001/cargos/${empresaCodigo}`);
+  const res = await fetch(`https://integracao-soc-credenciada-front.onrender.com/cargos/${empresaCodigo}`);
   const cargos = await res.json();
 
   const select = document.getElementById("cargoSelect");
@@ -288,7 +288,7 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
   };
 
   try {
-    await fetch("http://localhost:3001/novo-cadastro", {
+    await fetch("https://integracao-soc-credenciada-front.onrender.com/novo-cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dados)
