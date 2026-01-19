@@ -21,18 +21,16 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
-  }
-})
+  },
+  // força IPv4
+  family: 4
+});
 
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "pages", "index.html"));
 });
-
-pool.query('SELECT 1')
-  .then(() => console.log('🔥 Conectado ao Supabase'))
-  .catch(err => console.error('❌ Erro de conexão', err));
 
 // SOC – SOAP
 const WSDL_URL =
@@ -1144,6 +1142,16 @@ app.put("/usuarios/:id", async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
-  console.log(`🚀 API rodando na porta ${PORT}`);
-});
+pool.connect()
+  .then(client => {
+    console.log("🔥 Conectado ao Supabase via Render!");
+    client.release();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 API rodando na porta ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error("❌ Não foi possível conectar ao banco:", err);
+    process.exit(1); // encerra se não conectar
+  });
