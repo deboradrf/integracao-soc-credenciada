@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     usuario = JSON.parse(localStorage.getItem("usuario"));
 
     if (!usuario) {
-        window.location.href = "login.html";
+        window.location.href = "/pages/login.html";
         return;
     }
 
@@ -91,5 +91,5 @@ function acessarFormulario() {
 function logout() {
     localStorage.removeItem("usuario");
     localStorage.removeItem("empresaCodigo");
-    window.location.href = "login.html";
+    window.location.href = "/pages/login.html";
 }
