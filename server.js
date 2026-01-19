@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const path = require("path");
+
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
@@ -21,6 +23,12 @@ const pool = new Pool({
     rejectUnauthorized: false
   }
 })
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "pages", "index.html"));
+});
 
 pool.query('SELECT 1')
   .then(() => console.log('🔥 Conectado ao Supabase'))
