@@ -1,8 +1,5 @@
 require("dotenv").config();
 
-const dns = require("dns");
-dns.setDefaultResultOrder("ipv4first");
-
 const path = require("path");
 
 const express = require("express");
@@ -24,8 +21,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
-  },
-  family: 4 
+  }
 })
 
 app.use(express.static(path.join(__dirname, "public")));
