@@ -327,5 +327,5 @@ nomeInput.addEventListener("input", function () {
 function logout() {
   localStorage.removeItem("usuario");
   localStorage.removeItem("empresaCodigo");
-  window.location.href = "login.html";
+  window.location.href = "/pages/login.html";
 }

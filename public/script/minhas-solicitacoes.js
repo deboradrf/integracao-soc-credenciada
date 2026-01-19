@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   usuario = JSON.parse(localStorage.getItem("usuario"));
 
   if (!usuario) {
-    window.location.href = "login.html";
+    window.location.href = "/pages/login.html";
     return;
   }
 
@@ -73,12 +73,12 @@ async function carregarHistorico() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   if (!usuario) {
-    window.location.href = "login.html";
+    window.location.href = "/pages/login.html";
     return;
   }
 
   const res = await fetch(
-    `http://localhost:3001/minhas-solicitacoes/${usuario.id}`
+    `https://integracao-soc-credenciada-front.onrender.com/minhas-solicitacoes/${usuario.id}`
   );
 
   const solicitacoes = await res.json();
@@ -152,8 +152,8 @@ function verMotivo(motivo) {
 async function abrirModalEditar(id, tipo) {
   const url =
     tipo === "ASO"
-      ? `http://localhost:3001/solicitacoes/aso/${id}`
-      : `http://localhost:3001/solicitacoes/novo-cadastro/${id}`;
+      ? `https://integracao-soc-credenciada-front.onrender.com/solicitacoes/aso/${id}`
+      : `https://integracao-soc-credenciada-front.onrender.com/solicitacoes/novo-cadastro/${id}`;
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -259,7 +259,7 @@ async function salvarEdicaoCadastro() {
     status: "PENDENTE"
   };
 
-  const res = await fetch(`http://localhost:3001/solicitacoes/cadastro/${id}/editar`, {
+  const res = await fetch(`https://integracao-soc-credenciada-front.onrender.com/solicitacoes/cadastro/${id}/editar`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados)
@@ -308,7 +308,7 @@ async function salvarEdicaoASO() {
     status: "PENDENTE"
   };
 
-  const res = await fetch(`http://localhost:3001/solicitacoes/aso/${id}/editar`, {
+  const res = await fetch(`https://integracao-soc-credenciada-front.onrender.com/solicitacoes/aso/${id}/editar`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados)
@@ -352,5 +352,5 @@ function formatarData(data) {
 function logout() {
   localStorage.removeItem("usuario");
   localStorage.removeItem("empresaCodigo");
-  window.location.href = "login.html";
+  window.location.href = "/pages/login.html";
 }

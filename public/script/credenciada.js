@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
 
   if (!usuarioLogado) {
-    window.location.href = "login.html";
+    window.location.href = "/pages/login.html";
     return;
   }
 
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // FUNÇÃO PARA CARREGAR SOLICITAÇÕES E RENDERIZAR A TABELA
 async function carregarSolicitacoes() {
-  const res = await fetch("http://localhost:3001/solicitacoes");
+  const res = await fetch("https://integracao-soc-credenciada-front.onrender.com/solicitacoes");
   solicitacoes = await res.json();
   renderizarTabela(solicitacoes);
 }
@@ -173,8 +173,8 @@ async function verDetalhes(id, tipo) {
   try {
     const url =
       tipo === "ASO"
-        ? `http://localhost:3001/solicitacoes/aso/${id}`
-        : `http://localhost:3001/solicitacoes/novo-cadastro/${id}`;
+        ? `https://integracao-soc-credenciada-front.onrender.com/solicitacoes/aso/${id}`
+        : `https://integracao-soc-credenciada-front.onrender.com/solicitacoes/novo-cadastro/${id}`;
 
     const res = await fetch(url);
     if (!res.ok) throw new Error();
@@ -291,7 +291,7 @@ async function enviarSOC(id) {
   if (!confirm("Deseja enviar este funcionário ao SOC?")) return;
 
   const res = await fetch(
-    `http://localhost:3001/soc/funcionarios/${id}/enviar`,
+    `https://integracao-soc-credenciada-front.onrender.com/soc/funcionarios/${id}/enviar`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -351,7 +351,7 @@ async function analisarSolicitacao(status) {
   const tipo = isASO ? "ASO" : "NOVO_CADASTRO";
 
   const res = await fetch(
-    `http://localhost:3001/solicitacoes/${tipo}/${solicitacaoAtualId}/analisar`,
+    `https://integracao-soc-credenciada-front.onrender.com/solicitacoes/${tipo}/${solicitacaoAtualId}/analisar`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -377,5 +377,5 @@ async function analisarSolicitacao(status) {
 function logout() {
   localStorage.removeItem("usuario");
   localStorage.removeItem("empresaCodigo");
-  window.location.href = "login.html";
+  window.location.href = "/pages/login.html";
 }

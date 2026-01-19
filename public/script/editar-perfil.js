@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
 
     if (!usuarioLogado) {
-        window.location.href = "login.html";
+        window.location.href = "/pages/login.html";
     }
 
     const userNameDropdown = document.getElementById("userNameDropdown");
@@ -66,12 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
 carregarPerfil();
 
 async function carregarPerfil() {
-    const API = "http://localhost:3001";
+    const API = "https://integracao-soc-credenciada-front.onrender.com";
 
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
 
     if (!usuarioLogado) {
-        window.location.href = "login.html";
+        window.location.href = "/pages/login.html";
     }
 
     const res = await fetch(`${API}/usuarios/${usuarioLogado.id}`);
@@ -169,7 +169,7 @@ function cancelarEdicao() {
 
 // FUNÇÃO PARA SALVAR EDIÇÃO
 async function salvarEdicao() {
-    const API = "http://localhost:3001";
+    const API = "https://integracao-soc-credenciada-front.onrender.com";
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
 
     const email = document.getElementById("email").value;
@@ -212,5 +212,5 @@ function toggleSenha() {
 function logout() {
   localStorage.removeItem("usuario");
   localStorage.removeItem("empresaCodigo");
-  window.location.href = "login.html";
+  window.location.href = "/pages/login.html";
 }

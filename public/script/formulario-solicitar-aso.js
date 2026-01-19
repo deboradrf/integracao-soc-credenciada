@@ -1,13 +1,13 @@
 let usuario = null;
 
-const API = "http://localhost:3001";
+const API = "https://integracao-soc-credenciada-front.onrender.com";
 
 // USUÁRIO LOGADO
 const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
 
 if (!usuarioLogado) {
   alert("Usuário não logado");
-  window.location.href = "../pages/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 // DROPDOWN DO PERFIL
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   usuario = JSON.parse(localStorage.getItem("usuario"));
 
   if (!usuario) {
-    window.location.href = "login.html";
+    window.location.href = "/pages/login.html";
     return;
   }
 
@@ -95,7 +95,7 @@ function preencherFuncionarioASO() {
 
   if (!f) {
     alert("Pesquise um funcionário primeiro");
-    window.location.href = "solicitar-aso.html";
+    window.location.href = "/pages/solicitar-aso.html";
     return;
   }
 
@@ -218,7 +218,7 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
   };
 
   try {
-    const res = await fetch("http://localhost:3001/solicitar-aso", {
+    const res = await fetch("https://integracao-soc-credenciada-front.onrender.com/solicitar-aso", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dados)
@@ -242,5 +242,5 @@ document.getElementById("formCadastro").addEventListener("submit", async functio
 function logout() {
   localStorage.removeItem("usuario");
   localStorage.removeItem("empresaCodigo");
-  window.location.href = "login.html";
+  window.location.href = "/pages/login.html";
 }
