@@ -17,18 +17,12 @@ app.use(cors());
 app.use(express.json());
 
 // BANCO DE DADOS
-const isRender = !!process.env.RENDER;
-const connectionString = isRender
-  ? process.env.DATABASE_URL_RENDER
-  : process.env.DATABASE_URL_LOCAL;
-
 const pool = new Pool({
-  connectionString,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
-  },
-  family: 4
-});
+  }
+})
 
 app.use(express.static(path.join(__dirname, "public")));
 
