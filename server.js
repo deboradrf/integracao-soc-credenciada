@@ -17,12 +17,16 @@ app.use(cors());
 app.use(express.json());
 
 // BANCO DE DADOS
+const isRender = !!process.env.RENDER;
+const connectionString = isRender
+  ? process.env.DATABASE_URL_RENDER
+  : process.env.DATABASE_URL_LOCAL;
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
   ssl: {
     rejectUnauthorized: false
   },
-  // força IPv4
   family: 4
 });
 
@@ -31,6 +35,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "pages", "index.html"));
 });
+
+pool.query('SELECT 1')
+  .then(() => console.log('🔥 Conectado ao Supabase'))
+  .catch(err => console.error('❌ Erro de conexão', err));
 
 // SOC – SOAP
 const WSDL_URL =
@@ -1140,18 +1148,6 @@ app.put("/usuarios/:id", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
-
-pool.connect()
-  .then(client => {
-    console.log("🔥 Conectado ao Supabase via Render!");
-    client.release();
-
-    app.listen(PORT, () => {
-      console.log(`🚀 API rodando na porta ${PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error("❌ Não foi possível conectar ao banco:", err);
-    process.exit(1); // encerra se não conectar
-  });
+app.listen(3001, () => {
+  console.log("🚀 API rodando em http://localhost:3001");
+});
